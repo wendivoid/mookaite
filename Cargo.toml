@@ -1,0 +1,9 @@
+[package]
+name = "Backgrounded"
+version = "0.1.0"
+authors = ["buddja <buddjad@gmail.com>"]
+
+[dependencies]
+libc = "*"
+rand = "*"
+x11-dl = "2.6.1"
