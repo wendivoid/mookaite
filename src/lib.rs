@@ -15,7 +15,7 @@ use std::path::PathBuf;
 use std::time::{ Duration, Instant };
 
 pub fn run_mookaite(logger: slog::Logger,
-                 img_dir: &str,
+                 img_dir: PathBuf,
                  reload_time: u32,
                  mode: &str,
                  keep_going: bool,

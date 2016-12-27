@@ -16,16 +16,15 @@ pub struct Directory {
 }
 
 impl Directory {
-    pub fn new(image_directory: &str, logger: Logger) -> Directory {
+    pub fn new(image_directory: PathBuf, logger: Logger) -> Directory {
         trace!(logger, "Creating Directory store");
-        let path = Path::new(image_directory);
-        if !path.exists() {
-            crit!(&logger, "The Directory {} does not exist!",image_directory);
+        if !image_directory.exists() {
+            crit!(&logger, "The Directory {:?} does not exist!",image_directory);
             exit(1);
         }
         let mut a = Directory {
             logger: logger,
-            path: path.to_owned(),
+            path: image_directory,
             images: Vec::new(),
             last_load: Instant::now()
         };
@@ -79,22 +78,5 @@ impl Directory {
     pub fn random_selection(&mut self) -> &Path {
         let mut rng = rand::thread_rng();
         rng.choose(&self.images).expect("Unable to randomly select image")
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn load_paths() {
-        let mut d = Directory::new(".");
-        println!("{:#?}",d);
-    }
-
-    #[test]
-    fn random_image() {
-        let mut a = Directory::new("/home/orphius/Pictures/backgrounds");
-        println!("{:#?}",a.random_selection());
     }
 }

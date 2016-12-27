@@ -137,26 +137,3 @@ impl XWrapper {
 
     }
 }
-
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn current_desktop() {
-        let mut x = XWrapper::new();
-        println!("{:#?}",x.get_current_desktop());
-    }
-    #[test]
-    fn number_of_desktops() {
-        let mut x = XWrapper::new();
-        println!("{:#?}",x.get_number_of_desktops());
-    }
-
-    #[test]
-    fn next_event() {
-        let mut x = XWrapper::new();
-        x.next_event();
-    }
-}

@@ -8,6 +8,7 @@ extern crate mookaite;
 use slog::DrainExt;
 use clap::{ App, Arg };
 use std::fs::OpenOptions;
+use std::path::PathBuf;
 use mookaite::run_mookaite;
 
 fn main() {
@@ -87,7 +88,15 @@ fn main() {
     trace!(&logger, "Initializing logger.");
     let timeout = matches.value_of("timeout").unwrap_or("300").parse::<u32>().expect("Timeout was not an integer");
 
-    let image_directory = matches.value_of("image_dir").unwrap_or("/home/$USER/Pictures");
+    let image_directory = match matches.value_of("image_dir"){
+        Some(d) => PathBuf::from(d),
+        None => {
+            let mut p = PathBuf::from("/home");
+            p.push(std::env::var("USER").expect("Unable to find current user and no directory set!"));
+            p.push("Pictures");
+            p
+        }
+    };
 
     let reload_time = matches.value_of("reload_time").unwrap_or("6000").parse::<u32>().expect("Reload time in not an integer!");
 
