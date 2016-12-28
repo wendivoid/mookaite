@@ -1,8 +1,8 @@
 use walkdir;
 use std::path::{ Path, PathBuf };
 use std::time::Instant;
-use rand;
 use rand::Rng;
+use rand;
 use std::process::exit;
 use std::error::Error;
 
@@ -16,6 +16,7 @@ pub struct Directory {
 }
 
 impl Directory {
+
     pub fn new(image_directory: PathBuf, logger: Logger) -> Directory {
         trace!(logger, "Creating Directory store");
         if !image_directory.exists() {
@@ -42,6 +43,7 @@ impl Directory {
                     if !file_type.is_dir() {
                         let p = a.path();
                         match p.extension() {
+                            None => {},
                             Some(d) => {
                                 match d.to_str() {
                                     None => {},
@@ -55,13 +57,12 @@ impl Directory {
                                             }
                                             //"png" => self.images.push(p.to_owned()),
                                             _ => {
-                                                trace!(self.logger, "Found file {:?} that is not png|jpg.", p);
+                                                trace!(self.logger, "Found file {:?} that is not png|jpg|jpeg.", p);
                                             }
                                         }
                                     },
                                 }
-                            },
-                            None => {}
+                            }
                         }
                     }
                 }

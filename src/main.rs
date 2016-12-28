@@ -15,12 +15,13 @@ fn main() {
     let matches = App::new("mookaite")
                         .author("Bytebuddha <shadowcynical@gmail.com>")
                         .version("1.0")
-                        .about("Keeps track of your desktop backgrounds")
+                        .about("A utility for randomaly changing desktop background based on
+virtual desktops.")
                         .arg(Arg::with_name("mode")
                                     .short("m")
                                     .long("mode")
                                     .value_name("MODE")
-                                    .help("The mode to of changing desktops")
+                                    .help("The mode of changing desktops, if not given random is used")
                                     .takes_value(true)
                                     .possible_values(&["mapped", "random"])
                         )
@@ -28,39 +29,52 @@ fn main() {
                                     .short("v")
                                     .long("verbose")
                                     .multiple(true)
-                                    .help("Set the log level.")
+                                    .help("Set the log level. 0 = Info, 1, Info, 2 = Debug, >3 = trace")
                         )
                         .arg(Arg::with_name("image_dir")
                                 .short("d")
                                 .long("image-directory")
                                 .value_name("IMG_DIR")
-                                .help("The directory to select random images from")
+                                .help("The directory to select random images from,
+if no directory is given /home/$USER/Pictures is used.")
                                 .takes_value(true)
 
                         )
                         .arg(Arg::with_name("reload_time")
                                     .short("r")
                                     .long("reload")
+                                    .value_name("RELOAD_TIME")
                                     .help("The time in secs to wait before searching for new files in IMG_DIR.")
                                     .takes_value(true)
                         )
                         .arg(Arg::with_name("log_file")
                                         .short("l")
                                         .long("log-file")
-                                        .help("The file to log output too")
+                                        .value_name("LOG_FILE")
+                                        .help("The file to log output too. if not given stdout
+is used.")
                                         .takes_value(true)
                         )
                         .arg(Arg::with_name("timeout")
                                     .short("t")
                                     .long("timeout")
-                                    .help("How long to keep a image on a given desktop")
+                                    .value_name("TIMEOUT")
+                                    .help("How long in secs to wait before randomaly changing all desktop backgrounds.
+If not given 900(15mins) is used.")
+                                    .takes_value(true)
+                        )
+                        .arg(Arg::with_name("feh_args")
+                                    .short("f")
+                                    .long("feh-args")
+                                    .value_name("FEH_ARGS")
+                                    .help("Provide optional arguments to pass to feh each time it is run.")
                                     .takes_value(true)
                         )
                         .arg(Arg::with_name("no_listen")
                                     .short("-n")
                                     .long("no-listen")
                                     .takes_value(false)
-                                    .help("Just change the background and quit")
+                                    .help("Just Randomaly change the background and quit.")
                         ).get_matches();
     let log_level = match matches.occurrences_of("log_level") {
         0 => slog::Level::Critical,
@@ -86,7 +100,7 @@ fn main() {
         }
     };
     trace!(&logger, "Initializing logger.");
-    let timeout = matches.value_of("timeout").unwrap_or("300").parse::<u32>().expect("Timeout was not an integer");
+    let timeout = matches.value_of("timeout").unwrap_or("900").parse::<u32>().expect("Timeout was not an integer");
 
     let image_directory = match matches.value_of("image_dir"){
         Some(d) => PathBuf::from(d),
@@ -104,7 +118,12 @@ fn main() {
 
     let no_listen = matches.is_present("no_listen");
 
-    run_mookaite(logger, image_directory, reload_time, mode, no_listen, timeout);
+    let feh_args = match matches.value_of("feh_args") {
+        Some(d) => Some(d),
+        None => None
+    };
+
+    run_mookaite(logger, image_directory, reload_time, mode, no_listen, timeout, feh_args);
 }
 
 struct Formater;

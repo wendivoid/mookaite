@@ -10,6 +10,7 @@ use std::path::PathBuf;
 use std::process::Command;
 
 pub struct XWrapper {
+    args: Option<Vec<String>>,
     logger: Logger,
     xlib: xlib::Xlib,
     display: *mut xlib::Display,
@@ -17,15 +18,24 @@ pub struct XWrapper {
 }
 
 impl XWrapper {
-    pub fn new(logger: Logger) -> XWrapper {
+    pub fn new(logger: Logger, feh_args: Option<&str>) -> XWrapper {
         let xlib = xlib::Xlib::open().expect("Unable to open Xlib!");
         let display = unsafe { (xlib.XOpenDisplay)(null()) };
         if display == null_mut() {
             panic!("Unable to open display");
         }
+        let a = if feh_args.is_some() {
+                let args: Vec<String> = feh_args.unwrap().split(" ")
+                .collect::<Vec<&str>>().iter().map(|w| w.to_string()).collect();
+                Some(args)
+            } else {
+                None
+            };
+
         //Get the root window.
         let rt = unsafe { (xlib.XRootWindow)(display, (xlib.XDefaultScreen)(display)) };
         let mut a = XWrapper {
+            args: a,
             logger: logger,
             display: display,
             root_window: rt,
@@ -48,24 +58,27 @@ impl XWrapper {
         }
     }
 
-    pub fn next_event(&mut self) -> xlib::XPropertyEvent {
-        trace!(self.logger, "Waiting for Xlib event!");
-        loop {
-            let mut event: xlib::XEvent = unsafe { zeroed() };
-            unsafe { (self.xlib.XNextEvent)(self.display, &mut event) };
-            match event.get_type() {
-                xlib::PropertyNotify => {
-                    let e: xlib::XPropertyEvent = From::from(event);
-                    let got: u64 = e.atom;
-                    let wanted = self.get_atom_by_name("_NET_CURRENT_DESKTOP");
-                    if got == wanted {
-                        trace!(self.logger, "Returning event");
-                        return e;
-                    }
-                },
-                _ => { unreachable!() }
-            }
-        }
+    pub fn next_event(&mut self) -> Option<xlib::XPropertyEvent> {
+            let pending = unsafe { (self.xlib.XPending)(self.display)};
+            if pending > 0 {
+                let mut event: xlib::XEvent = unsafe { zeroed() };
+                unsafe { (self.xlib.XNextEvent)(self.display, &mut event) };
+                match event.get_type() {
+                    xlib::PropertyNotify => {
+                        let e: xlib::XPropertyEvent = From::from(event);
+                        let got: u64 = e.atom;
+                        let wanted = self.get_atom_by_name("_NET_CURRENT_DESKTOP");
+                        if got == wanted {
+                            trace!(self.logger, "Returning event");
+                            return Some(e);
+                        }
+                    },
+                    _ => { unreachable!() }
+                }
+                None
+         } else {
+             None
+         }
     }
 
     pub fn get_number_of_desktops(&self) -> u8 {
@@ -100,12 +113,20 @@ impl XWrapper {
 
     pub fn change_background(&mut self, img_file: &PathBuf) {
         // Simple using feh for changing backgrounds for now.
-        trace!(self.logger,"Changing background to {:?}",img_file);
-        Command::new("/usr/bin/feh")
-                     .arg("--bg-scale")
+        trace!(self.logger,"Changing background to {:?}, feh_args: {:?}",img_file,self.args);
+        if let Some(ref d) = self.args {
+            Command::new("/usr/bin/feh")
+                     .args(&d[..])
                      .arg(img_file)
                      .spawn()
                      .expect("Failed to run feh");
+        } else {
+            Command::new("/usr/bin/feh")
+                    .arg("--bg-scale")
+                    .arg(img_file)
+                    .spawn()
+                    .expect("Failed to run feh!");
+        }
     }
 
     pub fn get_current_desktop(&self) -> usize {
