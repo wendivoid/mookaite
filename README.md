@@ -1,7 +1,7 @@
 # Mookaite
 
 Mookaite is a script to map background images to x11 virtual desktops for the time being it requires the 'feh' command.
-
+**Not quite ready for human consumption.**
 If your currous 'mookaite' is a type of gemstone.
 
 I was unsatisfied with the other availible options because
