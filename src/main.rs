@@ -15,7 +15,7 @@ fn main() {
     let matches = App::new("mookaite")
                         .usage("mookaite [FLAGS] [OPTIONS] --feh-args [FEH_ARGS]")
                         .author("Bytebuddha <shadowcynical@gmail.com>")
-                        .version("1.0")
+                        .version("0.5")
                         .about("A utility for randomaly changing desktop background based on
 virtual desktops.")
                         .arg(Arg::with_name("mode")
