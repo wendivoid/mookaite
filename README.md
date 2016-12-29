@@ -42,8 +42,8 @@ If your currous 'mookaite' is a type of gemstone.
 # Notes
 
   - If the background command is '/usr/bin/feh' and **NO** '--args' are given '--bg-scale' is still passed, this is simply to
-    make my personal settings the default so i could be lazy. The goal is to be able
-    to pass an empty '--args' flag to remove it, **but this will cause feh to run in GUI mode** if flags were not passed by '--args'.
+    make my personal settings the default so i could be lazy. To circumvent this behavior
+    pass an empty '--args' flag to remove it, **but this might cause feh to run in GUI mode**.
 
   - This program is only really intended for my own personal use but if someone
     started using it as well, i'd be willing to add or change features.
