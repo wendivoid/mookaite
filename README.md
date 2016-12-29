@@ -32,25 +32,25 @@ I was unsatisfied with the other availible options because
 
 # Notes
 
-    - If no '--feh-args' are given '--bg-scale' is still passed, this was simply to
+  - If no '--feh-args' are given '--bg-scale' is still passed, this was simply to
     make my personal settings the default so i could be lazy. The goal is to be able
     to pass an empty '--feh-args' flag to remove it, **but this is not implemented yet.**
 
-    - Their is one more feature i **plan** on adding witch is being able to change 'feh'
+  - Their is one more feature i **plan** on adding witch is being able to change 'feh'
     to whatever background setting command you wish to use. When that is complete i willing
     consider it version 0.9. After i've used it for a week or two and fixed any bug's that
     pop up i will release version 1.0.
 
-    - I am by no means a lawyer so as soon as i figure out witch license translate to
+  - I am by no means a lawyer so as soon as i figure out witch license translate to
     "idgaf what you do with it" i will license it.
 
-    - With the above being said this readme is still acurate for the current version, and i
+  - With the above being said this readme is still acurate for the current version, and i
     will update it appropriatly.
 
-    - This program is only really intended for my own personal use but if someone
+  - This program is only really intended for my own personal use but if someone
     started using it as well, i'd be willing to add or change features.
 
-    - My computer sucks, (1 Core, 1.7 mem) so a couple things i did to make mookaite
+  - My computer sucks, (1 Core, 1.7 mem) so a couple things i did to make mookaite
     a little more useful to me.
 
       1. Their are 2 pauses, 1 (500ms) each cycle and 1 (750ms) only if their were no
