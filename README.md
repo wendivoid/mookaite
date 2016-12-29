@@ -9,7 +9,7 @@ I was unsatisfied with the other availible options because
  2. No 'random mode' meaning i couldn't find a tool that just picked a random
  image every time the virtual desktop is changed.
  3. I was unable to find a tool that would change background images continously(say every 5 minutes or so).
-
+ 4. Couldn't find a tool that monitored the image directory for changes
 # Build
     cargo build --release
 

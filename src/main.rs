@@ -6,13 +6,14 @@ extern crate slog_stream;
 extern crate mookaite;
 
 use slog::DrainExt;
-use clap::{ App, Arg };
+use clap::{ App, Arg, AppSettings };
 use std::fs::OpenOptions;
 use std::path::PathBuf;
 use mookaite::run_mookaite;
 
 fn main() {
     let matches = App::new("mookaite")
+                        .usage("mookaite [FLAGS] [OPTIONS] --feh-args [FEH_ARGS]")
                         .author("Bytebuddha <shadowcynical@gmail.com>")
                         .version("1.0")
                         .about("A utility for randomaly changing desktop background based on
@@ -63,19 +64,23 @@ is used.")
 If not given 900(15mins) is used.")
                                     .takes_value(true)
                         )
-                        .arg(Arg::with_name("feh_args")
-                                    .short("f")
-                                    .long("feh-args")
-                                    .value_name("FEH_ARGS")
-                                    .help("Provide optional arguments to pass to feh each time it is run.")
-                                    .takes_value(true)
-                        )
                         .arg(Arg::with_name("no_listen")
                                     .short("-n")
                                     .long("no-listen")
                                     .takes_value(false)
                                     .help("Just Randomaly change the background and quit.")
-                        ).get_matches();
+                        )
+                        .setting(AppSettings::TrailingVarArg)
+                        .setting(AppSettings::AllowLeadingHyphen)
+                        .arg(Arg::with_name("feh_args")
+                                .short("f")
+                                .allow_hyphen_values(true)
+                                .long("feh-args")
+                                .value_name("FEH_ARGS")
+                                .help("Provide optional arguments to pass to feh each time it is run.")
+                                .takes_value(true)
+                    ).get_matches();
+
     let log_level = match matches.occurrences_of("log_level") {
         0 => slog::Level::Critical,
         1 => slog::Level::Info,

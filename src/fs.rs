@@ -7,8 +7,9 @@ use std::process::exit;
 use std::error::Error;
 
 use slog::Logger;
-#[derive(Debug)]
+
 pub struct Directory {
+    rng: rand::ThreadRng,
     logger: Logger,
     path: PathBuf,
     last_load: Instant,
@@ -23,7 +24,9 @@ impl Directory {
             crit!(&logger, "The Directory {:?} does not exist!",image_directory);
             exit(1);
         }
+        let rng = rand::thread_rng();
         let mut a = Directory {
+            rng: rng,
             logger: logger,
             path: image_directory,
             images: Vec::new(),
@@ -77,7 +80,7 @@ impl Directory {
     }
 
     pub fn random_selection(&mut self) -> &Path {
-        let mut rng = rand::thread_rng();
-        rng.choose(&self.images).expect("Unable to randomly select image")
+
+        self.rng.choose(&self.images).expect("Unable to randomly select image")
     }
 }

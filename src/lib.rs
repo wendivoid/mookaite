@@ -90,14 +90,13 @@ impl Mookaite {
                         let ref mut current_bg = self.image_map[cd];
                         self.x.change_background(current_bg);
                     },
-                    None => {
-                        if self.since_timeout.elapsed() > self.timeout {
-                            self.change_backgrounds();
-                            let ref mut current_bg = self.image_map[cd];
-                            self.since_timeout = Instant::now();
-                            self.x.change_background(current_bg);
-                        }
-                    }
+                    None => {}
+            }
+            if self.since_timeout.elapsed() > self.timeout {
+                self.change_backgrounds();
+                let ref mut current_bg = self.image_map[cd];
+                self.since_timeout = Instant::now();
+                self.x.change_background(current_bg);
             }
 
         }
@@ -108,12 +107,11 @@ impl Mookaite {
         loop {
             match self.x.next_event() {
                 Some(_) => self.x.change_background(&self.img_dir.0.random_selection().to_path_buf()),
-                None => {
-                    if self.img_dir.1.elapsed() > self.reload_time {
-                        self.img_dir.0.reload();
-                        self.img_dir.1 = Instant::now();
-                    }
-                }
+                None => {}
+            }
+            if self.img_dir.1.elapsed() > self.reload_time {
+                self.img_dir.0.reload();
+                self.img_dir.1 = Instant::now();
             }
         }
     }
