@@ -13,12 +13,13 @@ pub struct XWrapper {
     args: Option<Vec<String>>,
     logger: Logger,
     xlib: xlib::Xlib,
+    cmd: String,
     display: *mut xlib::Display,
     root_window: xlib::Window,
 }
 
 impl XWrapper {
-    pub fn new(logger: Logger, feh_args: Option<&str>) -> XWrapper {
+    pub fn new(logger: Logger, cmd: &str, feh_args: Option<&str>) -> XWrapper {
         let xlib = xlib::Xlib::open().expect("Unable to open Xlib!");
         let display = unsafe { (xlib.XOpenDisplay)(null()) };
         if display == null_mut() {
@@ -39,6 +40,7 @@ impl XWrapper {
             logger: logger,
             display: display,
             root_window: rt,
+            cmd: cmd.to_string(),
             xlib: xlib,
         };
         a.init();
@@ -115,17 +117,25 @@ impl XWrapper {
         // Simple using feh for changing backgrounds for now.
         trace!(self.logger,"Changing background to {:?}, feh_args: {:?}",img_file,self.args);
         if let Some(ref d) = self.args {
-            Command::new("/usr/bin/feh")
+            Command::new(&self.cmd)
                      .args(&d[..])
                      .arg(img_file)
                      .spawn()
-                     .expect("Failed to run feh");
+                     .expect("Failed to run BackgroundCommand");
         } else {
-            Command::new("/usr/bin/feh")
+            // Hack to automatically pass '--bg-scale' to feh.
+            if self.cmd == "/usr/bin/feh" {
+                Command::new(&self.cmd)
                     .arg("--bg-scale")
                     .arg(img_file)
                     .spawn()
-                    .expect("Failed to run feh!");
+                    .expect("Failed to run Background Command!");
+            } else {
+                Command::new(&self.cmd)
+                    .arg(img_file)
+                    .spawn()
+                    .expect("Failed to run Background Command!");
+            }
         }
     }
 

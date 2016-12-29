@@ -1,3 +1,4 @@
+#[macro_use]
 extern crate clap;
 #[macro_use]
 extern crate slog;
@@ -13,9 +14,9 @@ use mookaite::run_mookaite;
 
 fn main() {
     let matches = App::new("mookaite")
-                        .usage("mookaite [FLAGS] [OPTIONS] --feh-args [FEH_ARGS]")
+                        .usage("mookaite [FLAGS] [OPTIONS] --args [ARGS]")
                         .author("Bytebuddha <shadowcynical@gmail.com>")
-                        .version("0.5")
+                        .version(crate_version!())
                         .about("A utility for randomaly changing desktop background based on
 virtual desktops.")
                         .arg(Arg::with_name("mode")
@@ -48,6 +49,13 @@ if no directory is given /home/$USER/Pictures is used.")
                                     .help("The time in secs to wait before searching for new files in IMG_DIR.")
                                     .takes_value(true)
                         )
+                        .arg(Arg::with_name("background-command")
+                                    .short("c")
+                                    .long("background-command")
+                                    .value_name("SET_COMMAND")
+                                    .help("Specify the background set command to use, default is /usr/bin/feh.")
+                                    .takes_value(true)
+                        )
                         .arg(Arg::with_name("log_file")
                                         .short("l")
                                         .long("log-file")
@@ -72,10 +80,10 @@ If not given 900(15mins) is used.")
                         )
                         .setting(AppSettings::TrailingVarArg)
                         .setting(AppSettings::AllowLeadingHyphen)
-                        .arg(Arg::with_name("feh_args")
-                                .short("f")
+                        .arg(Arg::with_name("other-args")
+                                .short("a")
                                 .allow_hyphen_values(true)
-                                .long("feh-args")
+                                .long("args")
                                 .value_name("FEH_ARGS")
                                 .multiple(true)
                                 .help("Provide optional arguments to pass to feh each time it is run.")
@@ -124,12 +132,14 @@ If not given 900(15mins) is used.")
 
     let no_listen = matches.is_present("no_listen");
 
-    let feh_args = match matches.value_of("feh_args") {
+    let feh_args = match matches.value_of("other-args") {
         Some(d) => Some(d),
         None => None
     };
 
-    run_mookaite(logger, image_directory, reload_time, mode, no_listen, timeout, feh_args);
+    let cmd = matches.value_of("background-command").unwrap_or("/usr/bin/feh");
+
+    run_mookaite(logger, image_directory, reload_time, mode, no_listen, timeout, cmd, feh_args);
 }
 
 struct Formater;

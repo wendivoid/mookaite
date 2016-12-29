@@ -21,11 +21,12 @@ pub fn run_mookaite(logger: slog::Logger,
                  mode: &str,
                  keep_going: bool,
                  timeout: u32,
+                 cmd: &str,
                  feh_args: Option<&str>
              ) {
             trace!(&logger, "Initializing mookaite, mode: {}, timeout: {}",mode,timeout);
             let dir = fs::Directory::new(img_dir, logger.new(o!()));
-            let mut m = Mookaite::new(logger, Duration::new(reload_time as u64,0), dir, mode, timeout, keep_going, feh_args);
+            let mut m = Mookaite::new(logger, Duration::new(reload_time as u64,0), dir, mode, timeout, keep_going, cmd, feh_args);
             m.run();
 }
 
@@ -47,9 +48,10 @@ impl Mookaite {
         mode: &str,
         timeout: u32,
         keep_going: bool,
+        cmd: &str,
         feh_args: Option<&str>
     ) -> Mookaite {
-        let xx = XWrapper::new(logger.clone(), feh_args);
+        let xx = XWrapper::new(logger.clone(), cmd, feh_args);
         Mookaite {
             keep_going: keep_going,
             since_timeout: Instant::now(),
@@ -99,9 +101,9 @@ impl Mookaite {
                         let ref mut current_bg = self.image_map[cd];
                         self.x.change_background(current_bg);
                     },
-                    None => { sleep(long_wait_d); }
+                    None => { sleep(wait_d); }
             }
-            sleep(wait_d);
+            sleep(long_wait_d);
         }
     }
 
@@ -140,7 +142,8 @@ impl Mookaite {
             return;
         }
         // Changing process priority.
-        unsafe { nice(10) };
+        unsafe { nice(19) };
+
         match &self.mode[..] {
             "random" => self.run_random(),
             "mapped" => self.run_mapped(),

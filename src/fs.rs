@@ -80,7 +80,7 @@ impl Directory {
     }
 
     pub fn random_selection(&mut self) -> &Path {
-
+        
         self.rng.choose(&self.images).expect("Unable to randomly select image")
     }
 }
