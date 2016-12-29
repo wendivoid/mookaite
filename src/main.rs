@@ -77,6 +77,7 @@ If not given 900(15mins) is used.")
                                 .allow_hyphen_values(true)
                                 .long("feh-args")
                                 .value_name("FEH_ARGS")
+                                .multiple(true)
                                 .help("Provide optional arguments to pass to feh each time it is run.")
                                 .takes_value(true)
                     ).get_matches();

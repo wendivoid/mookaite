@@ -13,7 +13,8 @@ mod fs;
 
 use std::path::PathBuf;
 use std::time::{ Duration, Instant };
-
+use std::thread::sleep;
+use libc::nice;
 pub fn run_mookaite(logger: slog::Logger,
                  img_dir: PathBuf,
                  reload_time: u32,
@@ -78,41 +79,49 @@ impl Mookaite {
 
     pub fn run_mapped(&mut self) {
         info!(self.logger, "Running in mapped mode!");
-
+        let wait_d = Duration::new(0,500);
+        let long_wait_d = Duration::new(0,750);
         loop {
             if self.img_dir.1.elapsed() > self.reload_time {
                 self.img_dir.0.reload();
                 self.img_dir.1 = Instant::now();
             }
             let cd = self.x.get_current_desktop();
-            match self.x.next_event() {
-                    Some(_) => {
-                        let ref mut current_bg = self.image_map[cd];
-                        self.x.change_background(current_bg);
-                    },
-                    None => {}
-            }
+            // change background if timeout is reached
             if self.since_timeout.elapsed() > self.timeout {
                 self.change_backgrounds();
                 let ref mut current_bg = self.image_map[cd];
                 self.since_timeout = Instant::now();
                 self.x.change_background(current_bg);
             }
-
+            match self.x.next_event() {
+                    Some(_) => {
+                        let ref mut current_bg = self.image_map[cd];
+                        self.x.change_background(current_bg);
+                    },
+                    None => { sleep(long_wait_d); }
+            }
+            sleep(wait_d);
         }
     }
 
     pub fn run_random(&mut self) {
         info!(self.logger, "Running in random mode.");
+        let wait_d = Duration::new(0,500);
         loop {
             match self.x.next_event() {
                 Some(_) => self.x.change_background(&self.img_dir.0.random_selection().to_path_buf()),
-                None => {}
+                None => {
+                    // If no event sleep to keep cpu usage down.
+                    sleep(wait_d);
+                }
             }
             if self.img_dir.1.elapsed() > self.reload_time {
                 self.img_dir.0.reload();
                 self.img_dir.1 = Instant::now();
             }
+            // Sleep to get cpu usage down.
+            sleep(wait_d);
         }
     }
 
@@ -130,6 +139,8 @@ impl Mookaite {
             trace!(self.logger, "exiting early due to --no-listen flag");
             return;
         }
+        // Changing process priority.
+        unsafe { nice(10) };
         match &self.mode[..] {
             "random" => self.run_random(),
             "mapped" => self.run_mapped(),
