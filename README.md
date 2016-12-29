@@ -10,6 +10,7 @@ I was unsatisfied with the other availible options because
  image every time the virtual desktop is changed.
  3. I was unable to find a tool that would change background images continously(say every 5 minutes or so).
  4. Couldn't find a tool that monitored the image directory for changes
+ 5.
 # Build
     cargo build --release
 
@@ -21,13 +22,16 @@ I was unsatisfied with the other availible options because
 
 # Running
   Run in deafult(my) mode.
+
   `./mookaite #mookaite -m random -d /home/$USER/Pictures -t 300 -r 6000`
 
   Run in mapped mode, changing background every 10mins passing "--bg-tile" to feh,
   also sending logs 'straight to hell without passing'.
+
   `./mookaite -m mapped -t 600 -l /dev/null --feh-args --bg-tile`
 
 # Notes
+
     - If no '--feh-args' are given '--bg-scale' is still passed, this was simply to
     make my personal settings the default so i could be lazy. The goal is to be able
     to pass an empty '--feh-args' flag to remove it, **but this is not implemented yet.**
@@ -48,6 +52,8 @@ I was unsatisfied with the other availible options because
 
     - My computer sucks, (1 Core, 1.7 mem) so a couple things i did to make mookaite
     a little more useful to me.
+
       1. Their are 2 pauses, 1 (500ms) each cycle and 1 (750ms) only if their were no
       x events.
+
       2. Set proccess 'nice' value (+10) using libc.
