@@ -1,8 +1,6 @@
 # Mookaite 0.5
 
-###### Mookaite is a script to map background images to x11 virtual desktops for the time being it requires the 'feh' command.
-
-#### **Not quite ready for human consumption.**
+###### Mookaite is a script to map background images to x11 virtual desktops for the time being it requires the 'feh' command
 
 If your currous 'mookaite' is a type of gemstone.
 
@@ -19,21 +17,15 @@ If your currous 'mookaite' is a type of gemstone.
 # Build
     cargo build --release
 
-
-# Modes
-  - mapped - assign each desktop a background and switch between them.
-
-  - random - Change the background to a random image everytime the virtual desktop is changed.
-
 # Running
   Run in deafult(my) mode.
 
-  `./mookaite #mookaite -c /usr/bin/feh -m random -d /home/$USER/Pictures -t 300 -r 6000`
+  `./mookaite #mookaite -c /usr/bin/feh -d /home/$USER/Pictures -t 300 -r 6000`
 
-  Run in mapped mode, changing background every 10mins passing "--bg-tile" to feh,
-  also sending logs 'straight to hell'.
+  Run in mapped mode, changing background every 10mins, passing "--bg-tile" to feh,
+  also sending logs straight to hell.
 
-  `./mookaite -m mapped -t 600 -l /dev/null -args --bg-tile`
+  `./mookaite -t 600 -l /dev/null -args --bg-tile`
 
   Run with xsetroot in random mode. Changing image every minute
 

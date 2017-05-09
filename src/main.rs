@@ -13,14 +13,6 @@ fn main() {
                         .version(crate_version!())
                         .about("A utility for randomaly changing desktop background based on
 virtual desktops.")
-                        .arg(Arg::with_name("mode")
-                                    .short("m")
-                                    .long("mode")
-                                    .value_name("MODE")
-                                    .help("The mode of changing desktops, if not given random is used")
-                                    .takes_value(true)
-                                    .possible_values(&["mapped", "random"])
-                        )
                         .arg(Arg::with_name("image_dir")
                                 .short("d")
                                 .long("image-directory")
@@ -69,9 +61,6 @@ If not given 900(15mins) is used.")
         }
     };
 
-    let mode = matches.value_of("mode").unwrap_or("random");
-
-
     let feh_args = match matches.value_of("other-args") {
         Some(d) => {
             d.split(" ").collect::<Vec<&str>>()
@@ -81,5 +70,5 @@ If not given 900(15mins) is used.")
 
     let cmd = matches.value_of("background-command").unwrap_or("/usr/bin/feh");
 
-    run_mookaite(image_directory, mode, timeout, cmd, feh_args);
+    run_mookaite(image_directory, timeout, cmd, feh_args);
 }

@@ -52,10 +52,6 @@ impl Directory {
         }
     }
 
-    pub fn reload(&mut self) {
-        self.load();
-    }
-
     pub fn random_selection(&self) -> &Path {
         let mut rng = rand::thread_rng();
         rng.choose(&self.images).expect("Unable to randomly select image")

@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 extern crate walkdir;
 extern crate rand;
 extern crate mio;
@@ -8,10 +10,10 @@ mod fs;
 
 use std::os::unix::io::AsRawFd;
 use std::path::{ PathBuf, Path };
-use std::time::{ Duration, Instant };
+use std::time::Duration;
 use mio::timer::Builder;
 use mio::unix::EventedFd;
-use mio::{ Poll, PollOpt, Ready, Token, Events, Event };
+use mio::{ Poll, PollOpt, Ready, Token, Events};
 
 
 fn change_background(cmd: &str, args: &Vec<&str>, path: &Path) {
@@ -20,14 +22,13 @@ fn change_background(cmd: &str, args: &Vec<&str>, path: &Path) {
 }
 
 pub fn run_mookaite(img_dir: PathBuf,
-                 _mode: &str,
                  timeout: u32,
                  cmd: &str,
                  feh_args: Vec<&str>
              ) {
             let dir = fs::Directory::new(img_dir);
 
-            let mut timer = Builder::default();
+            let timer = Builder::default();
             let mut timer = timer.tick_duration(Duration::from_secs(timeout as u64)).build::<()>();
             timer.set_timeout(Duration::from_secs(timeout as u64),()).unwrap();
 
@@ -39,10 +40,10 @@ pub fn run_mookaite(img_dir: PathBuf,
             let fd = display.as_raw_fd();
             let mio_fd = EventedFd(&fd);
 
-            let mut poll = Poll::new().unwrap();
+            let poll = Poll::new().unwrap();
 
-            poll.register(&timer, Token(2), Ready::all(), PollOpt::edge()).expect("");
-            poll.register(&mio_fd, Token(3), Ready::all(), PollOpt::edge()).expect("");
+            poll.register(&timer, Token(2), Ready::readable(), PollOpt::edge()).expect("");
+            poll.register(&mio_fd, Token(3), Ready::readable(), PollOpt::edge()).expect("");
 
             let mut events = Events::with_capacity(1024);
 
@@ -53,18 +54,16 @@ pub fn run_mookaite(img_dir: PathBuf,
                 for event in events.iter() {
                     match event.token() {
                         Token(2) => {
-                            println!("Timeout");
                             change_background(cmd, &feh_args, dir.random_selection());
-                            timer.set_timeout(Duration::from_secs(timeout as u64), ()).unwrap();
-
+                            timer.set_timeout(Duration::from_secs(timeout as u64),()).unwrap();
                         },
                         Token(3) => {
                             for _ in 0..events.len() {
                                 if let Ok(xev) = display.get_event() {
                                     let prop: xlib::XPropertyEvent = From::from(xev.event);
                                     if prop.atom == curr_desk_atom {
-                                          print!("Wanted: Time: {:?}, atom {}",Instant::now(),prop.atom);
-                                          println!(" {:?}",display.get_atom_name(prop.atom));
+                                          //print!("Wanted: Time: {:?}, atom {}",Instant::now(),prop.atom);
+                                          //println!(" {:?}",display.get_atom_name(prop.atom));
                                           change_background(cmd, &feh_args, dir.random_selection());
                                     } else {
                                         //print!("Ignored: Time: {:?}, atom {}",Instant::now(),prop.atom);

@@ -9,7 +9,4 @@ rand = "0.3.15"
 walkdir = "1.0.3"
 clap = "2.19.2"
 mio = "*"
-#xlib = { git = "https://github.com/bytebuddha/xlib.git" }
-
-[dependencies.xlib]
-path = "../xlib"
+xlib = { git = "https://github.com/bytebuddha/xlib.git" }
