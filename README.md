@@ -18,7 +18,6 @@ If your currous 'mookaite' is a type of gemstone.
     cargo build --release
 
 # Running
-  Run in deafult(my) mode.
 
   `./mookaite #mookaite -c /usr/bin/feh -d /home/$USER/Pictures -t 300 -r 6000`
 
@@ -26,8 +25,6 @@ If your currous 'mookaite' is a type of gemstone.
   also sending logs straight to hell.
 
   `./mookaite -t 600 -l /dev/null -args --bg-tile`
-
-  Run with xsetroot in random mode. Changing image every minute
 
   `./mookaite -c /usr/bin/xsetroot -l /home/$USER/.config/mookaite.log -t 60`
 
